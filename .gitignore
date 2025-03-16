@@ -1,0 +1,5 @@
+build/
+install/
+log/
+build_Release_libstdc++11/
+CMakeUserPresets.json

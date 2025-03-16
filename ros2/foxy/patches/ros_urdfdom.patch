@@ -1,0 +1,86 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 06779d2..3a1bdc2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -32,8 +32,9 @@ endif (MSVC OR MSVC90 OR MSVC10)
+ 
+ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+ 
+-find_package(tinyxml_vendor REQUIRED)
+ find_package(TinyXML REQUIRED)
++# set(TinyXML_INCLUDE_DIRS ${tinyxml_INCLUDE_DIRS})
++set(TinyXML_LIBRARIES tinyxml::tinyxml)
+ 
+ find_package(urdfdom_headers 1.0 REQUIRED)
+ 
+@@ -42,7 +43,6 @@ if(NOT CMAKE_CXX_STANDARD)
+   set(CMAKE_CXX_STANDARD 14)
+ endif()
+ 
+-find_package(console_bridge_vendor REQUIRED) # Provides console_bridge 0.4.0 on platforms without it.
+ find_package(console_bridge REQUIRED)
+ 
+ #In Visual Studio a special postfix for 
+diff --git a/package.xml b/package.xml
+index a5a1745..49c96d0 100644
+--- a/package.xml
++++ b/package.xml
+@@ -11,18 +11,14 @@
+   <author>John Hsu</author>
+   <author>Ioan Sucan</author>
+ 
+-  <build_depend>console_bridge_vendor</build_depend>
+   <build_depend>libconsole-bridge-dev</build_depend>
+   <build_depend>tinyxml</build_depend>
+-  <build_depend>tinyxml_vendor</build_depend>
+   <build_depend version_gte="0.2.3">urdfdom_headers</build_depend>
+   
+   <buildtool_depend>cmake</buildtool_depend>
+ 
+-  <exec_depend>console_bridge_vendor</exec_depend>
+   <exec_depend>libconsole-bridge-dev</exec_depend>
+   <exec_depend>tinyxml</exec_depend>
+-  <exec_depend>tinyxml_vendor</exec_depend>
+   <exec_depend version_gte="0.2.3">urdfdom_headers</exec_depend>
+ 
+   <export>
+diff --git a/urdf_parser/CMakeLists.txt b/urdf_parser/CMakeLists.txt
+index 0031541..37a61da 100644
+--- a/urdf_parser/CMakeLists.txt
++++ b/urdf_parser/CMakeLists.txt
+@@ -5,7 +5,7 @@ add_library(urdfdom_world SHARED
+   src/joint.cpp
+   src/world.cpp)
+ target_include_directories(urdfdom_world PUBLIC
+-  ${TinyXML_INCLUDE_DIRS}
++  #${TinyXML_INCLUDE_DIRS}
+   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+   "$<INSTALL_INTERFACE:include>")
+ target_link_libraries(urdfdom_world PUBLIC
+@@ -20,7 +20,7 @@ add_library(urdfdom_model SHARED
+   src/link.cpp
+   src/joint.cpp)
+ target_include_directories(urdfdom_model PUBLIC
+-  ${TinyXML_INCLUDE_DIRS}
++  #${TinyXML_INCLUDE_DIRS}
+   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+   "$<INSTALL_INTERFACE:include>")
+ target_link_libraries(urdfdom_model PUBLIC
+@@ -31,7 +31,7 @@ set_target_properties(urdfdom_model PROPERTIES SOVERSION ${URDF_MAJOR_MINOR_VERS
+ 
+ add_library(urdfdom_sensor SHARED src/urdf_sensor.cpp)
+ target_include_directories(urdfdom_sensor PUBLIC
+-  ${TinyXML_INCLUDE_DIRS}
++  #${TinyXML_INCLUDE_DIRS}
+   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+   "$<INSTALL_INTERFACE:include>")
+ target_link_libraries(urdfdom_sensor PUBLIC
+@@ -45,7 +45,7 @@ add_library(urdfdom_model_state SHARED
+   src/urdf_model_state.cpp
+   src/twist.cpp)
+ target_include_directories(urdfdom_model_state PUBLIC
+-  ${TinyXML_INCLUDE_DIRS}
++  #${TinyXML_INCLUDE_DIRS}
+   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+   "$<INSTALL_INTERFACE:include>")
+ target_link_libraries(urdfdom_model_state

@@ -1,0 +1,534 @@
+diff --git a/rviz2/CMakeLists.txt b/rviz2/CMakeLists.txt
+index 99a0b174..ce898b16 100644
+--- a/rviz2/CMakeLists.txt
++++ b/rviz2/CMakeLists.txt
+@@ -13,9 +13,10 @@ endif()
+ 
+ find_package(ament_cmake REQUIRED)
+ 
++find_package(assimp REQUIRED)
+ find_package(rviz_common REQUIRED)
+ 
+-find_package(rviz_ogre_vendor REQUIRED)
++find_package(OGRE REQUIRED)
+ 
+ find_package(Qt5 REQUIRED COMPONENTS Widgets)
+ # TODO(wjwwood): this block is to setup the windeployqt tool, could be removed later.
+@@ -45,8 +46,8 @@ add_executable(${PROJECT_NAME}
+ )
+ target_link_libraries(${PROJECT_NAME}
+   rviz_common::rviz_common
+-  rviz_ogre_vendor::OgreMain
+-  rviz_ogre_vendor::OgreOverlay
++  OgreMain
++  OgreOverlay
+   Qt5::Widgets
+ )
+ 
+diff --git a/rviz2/package.xml b/rviz2/package.xml
+index 8a3fbfbf..41959c90 100644
+--- a/rviz2/package.xml
++++ b/rviz2/package.xml
+@@ -25,7 +25,6 @@
+   <exec_depend>rviz_default_plugins</exec_depend>
+ 
+   <depend>rviz_common</depend>
+-  <depend>rviz_ogre_vendor</depend>
+ 
+   <test_depend>ament_cmake_cppcheck</test_depend>
+   <test_depend>ament_cmake_cpplint</test_depend>
+diff --git a/rviz_common/CMakeLists.txt b/rviz_common/CMakeLists.txt
+index e322162e..d8fb7b52 100644
+--- a/rviz_common/CMakeLists.txt
++++ b/rviz_common/CMakeLists.txt
+@@ -33,8 +33,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+ endif()
+ 
+ find_package(ament_cmake REQUIRED)
+-# do find_package(rviz_ogre_vendor) first to make sure the custom OGRE is found
+-find_package(rviz_ogre_vendor REQUIRED)
++# do find_package(OGRE) first to make sure the custom OGRE is found
++find_package(OGRE REQUIRED)
+ 
+ find_package(Qt5 REQUIRED COMPONENTS Widgets)
+ 
+@@ -42,19 +42,19 @@ find_package(geometry_msgs REQUIRED)
+ find_package(pluginlib REQUIRED)
+ find_package(rclcpp REQUIRED)
+ find_package(resource_retriever REQUIRED)
+-find_package(rviz_assimp_vendor REQUIRED)
++find_package(assimp REQUIRED)
+ find_package(rviz_rendering REQUIRED)
+ find_package(sensor_msgs REQUIRED)
+ find_package(std_msgs REQUIRED)
+-find_package(tinyxml_vendor REQUIRED)
+ find_package(tf2 REQUIRED)
+ find_package(tf2_geometry_msgs REQUIRED)
+ find_package(tf2_ros REQUIRED)
+ find_package(message_filters REQUIRED)
+ find_package(urdf REQUIRED)
+-find_package(yaml_cpp_vendor REQUIRED)
++find_package(yaml-cpp REQUIRED)
+ 
+ find_package(TinyXML REQUIRED)  # provided by tinyxml_vendor
++find_package(tinyxml2 REQUIRED)
+ 
+ # Copy env_config.hpp so that env_config.cpp can find it
+ # TODO(jsquare): Get rid of copy hpp file
+@@ -233,15 +233,17 @@ target_include_directories(rviz_common
+   PUBLIC
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+     $<INSTALL_INTERFACE:include>
+-    ${TinyXML_INCLUDE_DIRS}
+ )
+ 
+ target_link_libraries(rviz_common
+   PUBLIC
+-  rviz_ogre_vendor::OgreMain
+-  rviz_ogre_vendor::OgreOverlay
++  OgreMain
++  OgreOverlay
+   Qt5::Widgets
+-  ${TinyXML_LIBRARIES}
++  tinyxml::tinyxml
++  tinyxml2::tinyxml2
++  assimp::assimp
++  yaml-cpp
+ )
+ 
+ ament_target_dependencies(rviz_common
+@@ -250,7 +252,6 @@ ament_target_dependencies(rviz_common
+   pluginlib
+   rclcpp
+   resource_retriever
+-  rviz_assimp_vendor
+   rviz_rendering
+   sensor_msgs
+   std_msgs
+@@ -259,7 +260,6 @@ ament_target_dependencies(rviz_common
+   tf2_ros
+   message_filters
+   urdf
+-  yaml_cpp_vendor
+ )
+ # prevent pluginlib from using boost
+ target_compile_definitions(rviz_common PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
+@@ -279,7 +279,7 @@ ament_export_dependencies(
+   tf2_geometry_msgs
+   tf2_ros
+   urdf
+-  yaml_cpp_vendor
++  yaml-cpp
+ )
+ ament_export_include_directories(include)
+ ament_export_libraries(rviz_common)
+@@ -344,8 +344,8 @@ if(BUILD_TESTING)
+   if(TARGET frame_manager_test)
+     target_link_libraries(frame_manager_test
+       rviz_common
+-      rviz_ogre_vendor::OgreMain
+-      rviz_ogre_vendor::OgreOverlay
++      OgreMain
++      OgreOverlay
+     )
+   endif()
+ 
+@@ -355,8 +355,8 @@ if(BUILD_TESTING)
+   if(TARGET rviz_common_config_test)
+     target_link_libraries(rviz_common_config_test
+       rviz_common
+-      rviz_ogre_vendor::OgreMain
+-      rviz_ogre_vendor::OgreOverlay
++      OgreMain
++      OgreOverlay
+     )
+   endif()
+ 
+@@ -366,8 +366,8 @@ if(BUILD_TESTING)
+   if(TARGET rviz_common_uniform_string_stream_test)
+     target_link_libraries(rviz_common_uniform_string_stream_test
+       rviz_common
+-      rviz_ogre_vendor::OgreMain
+-      rviz_ogre_vendor::OgreOverlay
++      OgreMain
++      OgreOverlay
+     )
+   endif()
+ 
+@@ -415,8 +415,8 @@ if(BUILD_TESTING)
+   if(TARGET selection_manager_test)
+     target_link_libraries(selection_manager_test
+       rviz_common
+-      rviz_ogre_vendor::OgreMain
+-      rviz_ogre_vendor::OgreOverlay
++      OgreMain
++      OgreOverlay
+     )
+   endif()
+ 
+@@ -429,8 +429,8 @@ if(BUILD_TESTING)
+   if(TARGET selection_handler_test)
+     target_link_libraries(selection_handler_test
+       rviz_common
+-      rviz_ogre_vendor::OgreMain
+-      rviz_ogre_vendor::OgreOverlay
++      OgreMain
++      OgreOverlay
+     )
+   endif()
+ 
+@@ -443,7 +443,7 @@ if(BUILD_TESTING)
+     ${SKIP_DISPLAY_TESTS})
+   if(TARGET rviz_common_display_test)
+     target_link_libraries(rviz_common_display_test rviz_common Qt5::Widgets)
+-    ament_target_dependencies(rviz_common_display_test yaml_cpp_vendor)
++    ament_target_dependencies(rviz_common_display_test yaml-cpp)
+   endif()
+ endif()
+ 
+diff --git a/rviz_common/package.xml b/rviz_common/package.xml
+index 71a4d26c..5b7a74a4 100644
+--- a/rviz_common/package.xml
++++ b/rviz_common/package.xml
+@@ -18,10 +18,10 @@
+   <buildtool_depend>ament_cmake</buildtool_depend>
+ 
+   <build_depend>qtbase5-dev</build_depend>
+-  <build_depend>rviz_assimp_vendor</build_depend>
++  <build_depend>assimp</build_depend>
+ 
+   <build_export_depend>qtbase5-dev</build_export_depend>
+-  <build_export_depend>rviz_assimp_vendor</build_export_depend>
++  <build_export_depend>assimp</build_export_depend>
+ 
+   <exec_depend>libqt5-core</exec_depend>
+   <exec_depend>libqt5-gui</exec_depend>
+@@ -32,7 +32,6 @@
+   <depend>pluginlib</depend>
+   <depend>rclcpp</depend>
+   <depend>resource_retriever</depend>
+-  <depend>rviz_ogre_vendor</depend>
+   <depend>rviz_rendering</depend>
+   <depend>sensor_msgs</depend>
+   <depend>std_msgs</depend>
+@@ -40,9 +39,7 @@
+   <depend>tf2_geometry_msgs</depend>
+   <depend>tf2_ros</depend>
+   <depend>message_filters</depend>
+-  <depend>tinyxml_vendor</depend>
+   <depend>urdf</depend>
+-  <depend>yaml_cpp_vendor</depend>
+ 
+   <test_depend>ament_cmake_cppcheck</test_depend>
+   <test_depend>ament_cmake_cpplint</test_depend>
+diff --git a/rviz_default_plugins/CMakeLists.txt b/rviz_default_plugins/CMakeLists.txt
+index be796e92..66695e2e 100644
+--- a/rviz_default_plugins/CMakeLists.txt
++++ b/rviz_default_plugins/CMakeLists.txt
+@@ -52,9 +52,10 @@ endif()
+ 
+ find_package(ament_cmake REQUIRED)
+ 
++find_package(assimp)
+ find_package(rviz_common REQUIRED)
+ find_package(rviz_rendering REQUIRED)
+-find_package(rviz_ogre_vendor REQUIRED)
++find_package(OGRE REQUIRED)
+ 
+ find_package(Qt5 REQUIRED COMPONENTS Widgets Test)
+ 
+@@ -223,8 +224,8 @@ target_include_directories(rviz_default_plugins PUBLIC
+ )
+ 
+ target_link_libraries(rviz_default_plugins PUBLIC
+-  rviz_ogre_vendor::OgreMain
+-  rviz_ogre_vendor::OgreOverlay
++  OgreMain
++  OgreOverlay
+ )
+ 
+ # Causes the visibility macros to use dllexport rather than dllimport,
+@@ -265,7 +266,7 @@ ament_export_dependencies(
+   nav_msgs
+   rclcpp
+   resource_retriever
+-  rviz_ogre_vendor
++  OGRE
+   tf2
+   tf2_geometry_msgs
+   tf2_ros
+diff --git a/rviz_default_plugins/package.xml b/rviz_default_plugins/package.xml
+index 3c8caa74..5fed88b4 100644
+--- a/rviz_default_plugins/package.xml
++++ b/rviz_default_plugins/package.xml
+@@ -18,15 +18,12 @@
+   <buildtool_depend>ament_cmake</buildtool_depend>
+ 
+   <build_depend>qtbase5-dev</build_depend>
+-  <build_depend>rviz_ogre_vendor</build_depend>
+ 
+-  <build_export_depend>rviz_ogre_vendor</build_export_depend>
+ 
+   <exec_depend>libqt5-core</exec_depend>
+   <exec_depend>libqt5-gui</exec_depend>
+   <exec_depend>libqt5-opengl</exec_depend>
+   <exec_depend>libqt5-widgets</exec_depend>
+-  <exec_depend>rviz_ogre_vendor</exec_depend>
+ 
+   <depend>geometry_msgs</depend>
+   <depend>interactive_markers</depend>
+@@ -41,7 +38,6 @@
+   <depend>tf2</depend>
+   <depend>tf2_geometry_msgs</depend>
+   <depend>tf2_ros</depend>
+-  <depend>tinyxml_vendor</depend>
+   <depend>urdf</depend>
+   <depend>visualization_msgs</depend>
+ 
+diff --git a/rviz_rendering/CMakeLists.txt b/rviz_rendering/CMakeLists.txt
+index 746b525e..afb9e680 100644
+--- a/rviz_rendering/CMakeLists.txt
++++ b/rviz_rendering/CMakeLists.txt
+@@ -29,8 +29,8 @@ endif()
+ find_package(ament_cmake REQUIRED)
+ 
+ # do find_package(rviz_ogre_vendor) first to make sure the custom OGRE is found
+-find_package(rviz_ogre_vendor REQUIRED)
+-find_package(rviz_assimp_vendor REQUIRED)
++find_package(OGRE REQUIRED)
++find_package(assimp REQUIRED)
+ 
+ find_package(Qt5 REQUIRED COMPONENTS Widgets)
+ 
+@@ -97,8 +97,9 @@ add_library(rviz_rendering SHARED
+ 
+ target_link_libraries(rviz_rendering
+   PUBLIC
+-  rviz_ogre_vendor::OgreMain
+-  rviz_ogre_vendor::OgreOverlay
++  OgreMain
++  OgreOverlay
++  RenderSystem_GL
+   Qt5::Widgets
+   ament_index_cpp::ament_index_cpp
+   resource_retriever::resource_retriever
+@@ -108,20 +109,20 @@ target_include_directories(rviz_rendering
+   PUBLIC
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+     $<INSTALL_INTERFACE:include>
+-    ${Eigen3_INCLUDE_DIRS}
+ )
+ # Causes the visibility macros to use dllexport rather than dllimport,
+ # which is appropriate when building the dll but not consuming it.
+ target_compile_definitions(rviz_rendering PRIVATE "RVIZ_RENDERING_BUILDING_LIBRARY")
+ 
+ ament_export_targets(rviz_rendering)
++target_link_libraries(rviz_rendering PUBLIC assimp::assimp Eigen3::Eigen)
+ ament_target_dependencies(rviz_rendering
+   PUBLIC
+-  rviz_assimp_vendor
++  assimp
+ )
+ ament_export_dependencies(
+-  rviz_ogre_vendor
+-  rviz_assimp_vendor
++  OGRE
++  assimp
+   eigen3_cmake_module
+   Eigen3
+   resource_retriever
+@@ -174,7 +175,7 @@ if(BUILD_TESTING)
+   )
+   target_link_libraries(rviz_rendering_test_utils
+     PUBLIC
+-    rviz_ogre_vendor::OgreMain
++    OgreMain
+     rviz_rendering
+   )
+ 
+@@ -188,7 +189,7 @@ if(BUILD_TESTING)
+     ${SKIP_DISPLAY_TESTS})
+   if(TARGET point_cloud_test_target)
+     target_link_libraries(point_cloud_test_target
+-      rviz_ogre_vendor::OgreMain
++      OgreMain
+       rviz_rendering
+       rviz_rendering_test_utils
+       Qt5::Widgets  # explicitly do this for include directories (not necessary for external use)
+@@ -200,7 +201,7 @@ if(BUILD_TESTING)
+     ${SKIP_DISPLAY_TESTS})
+   if(TARGET point_cloud_renderable_test_target)
+     target_link_libraries(point_cloud_renderable_test_target
+-      rviz_ogre_vendor::OgreMain
++      OgreMain
+       rviz_rendering
+       rviz_rendering_test_utils
+       Qt5::Widgets  # explicitly do this for include directories (not necessary for external use)
+@@ -212,7 +213,7 @@ if(BUILD_TESTING)
+     ${SKIP_DISPLAY_TESTS})
+   if(TARGET billboard_line_test_target)
+     target_link_libraries(billboard_line_test_target
+-      rviz_ogre_vendor::OgreMain
++      OgreMain
+       rviz_rendering
+       rviz_rendering_test_utils
+       Qt5::Widgets  # explicitly do this for include directories (not necessary for external use)
+@@ -224,7 +225,7 @@ if(BUILD_TESTING)
+     ${SKIP_DISPLAY_TESTS})
+   if(TARGET covariance_visual_test_target)
+     target_link_libraries(covariance_visual_test_target
+-      rviz_ogre_vendor::OgreMain
++      OgreMain
+       rviz_rendering
+       rviz_rendering_test_utils
+       Qt5::Widgets  # explicitly do this for include directories (not necessary for external use)
+@@ -236,7 +237,7 @@ if(BUILD_TESTING)
+     ${SKIP_DISPLAY_TESTS})
+   if(TARGET grid_test_target)
+     target_link_libraries(grid_test_target
+-      rviz_ogre_vendor::OgreMain
++      OgreMain
+       rviz_rendering
+       rviz_rendering_test_utils
+       Qt5::Widgets  # explicitly do this for include directories (not necessary for external use)
+@@ -248,8 +249,8 @@ if(BUILD_TESTING)
+     ${SKIP_DISPLAY_TESTS})
+   if(TARGET movable_text_test_target)
+     target_link_libraries(movable_text_test_target
+-      rviz_ogre_vendor::OgreMain
+-      rviz_ogre_vendor::OgreOverlay
++      OgreMain
++      OgreOverlay
+       rviz_rendering
+       rviz_rendering_test_utils
+       Qt5::Widgets
+@@ -261,7 +262,7 @@ if(BUILD_TESTING)
+     ${SKIP_DISPLAY_TESTS})
+   if(TARGET line_test_target)
+     target_link_libraries(line_test_target
+-      rviz_ogre_vendor::OgreMain
++      OgreMain
+       rviz_rendering
+       rviz_rendering_test_utils
+       Qt5::Widgets  # explicitly do this for include directories (not necessary for external use)
+@@ -273,7 +274,7 @@ if(BUILD_TESTING)
+     ${SKIP_DISPLAY_TESTS})
+   if(TARGET wrench_visual_test_target)
+     target_link_libraries(wrench_visual_test_target
+-      rviz_ogre_vendor::OgreMain
++      OgreMain
+       rviz_rendering
+       rviz_rendering_test_utils
+       Qt5::Widgets  # explicitly do this for include directories (not necessary for external use)
+diff --git a/rviz_rendering/package.xml b/rviz_rendering/package.xml
+index 4cba96a5..8f4f01b8 100644
+--- a/rviz_rendering/package.xml
++++ b/rviz_rendering/package.xml
+@@ -24,12 +24,9 @@
+   <build_depend>eigen</build_depend>
+   <build_depend>qtbase5-dev</build_depend>
+   <build_depend>resource_retriever</build_depend>
+-  <build_depend>rviz_assimp_vendor</build_depend>
+-  <build_depend>rviz_ogre_vendor</build_depend>
+ 
+   <build_export_depend>eigen</build_export_depend>
+   <build_export_depend>qtbase5-dev</build_export_depend>
+-  <build_export_depend>rviz_ogre_vendor</build_export_depend>
+ 
+   <exec_depend>ament_index_cpp</exec_depend>
+   <exec_depend>libqt5-core</exec_depend>
+@@ -37,8 +34,6 @@
+   <exec_depend>libqt5-opengl</exec_depend>
+   <exec_depend>libqt5-widgets</exec_depend>
+   <exec_depend>resource_retriever</exec_depend>
+-  <exec_depend>rviz_assimp_vendor</exec_depend>
+-  <exec_depend>rviz_ogre_vendor</exec_depend>
+ 
+   <test_depend>ament_cmake_cppcheck</test_depend>
+   <test_depend>ament_cmake_cpplint</test_depend>
+@@ -46,7 +41,6 @@
+   <test_depend>ament_cmake_gmock</test_depend>
+   <test_depend>ament_cmake_lint_cmake</test_depend>
+   <test_depend>ament_cmake_uncrustify</test_depend>
+-  <test_depend>rviz_assimp_vendor</test_depend>
+ 
+   <export>
+     <build_type>ament_cmake</build_type>
+diff --git a/rviz_rendering/src/rviz_rendering/render_system.cpp b/rviz_rendering/src/rviz_rendering/render_system.cpp
+index 1765e804..934b6478 100644
+--- a/rviz_rendering/src/rviz_rendering/render_system.cpp
++++ b/rviz_rendering/src/rviz_rendering/render_system.cpp
+@@ -299,11 +299,17 @@ RenderSystem::setPluginDirectory()
+ {
+   std::string content;
+   std::string prefix_path;
+-  ament_index_cpp::get_resource("packages", "rviz_ogre_vendor", content, &prefix_path);
++  ament_index_cpp::get_resource("packages", "OGRE", content, &prefix_path);
+ #ifdef _WIN32
+-  set_ogre_plugin_directory(prefix_path + "\\opt\\rviz_ogre_vendor\\bin\\");
++  set_ogre_plugin_directory(prefix_path + "\\opt\\OGRE\\bin\\");
+ #else
+-  set_ogre_plugin_directory(prefix_path + "/opt/rviz_ogre_vendor/lib/OGRE/");
++  char * custom_ogre_path = nullptr;
++  const char* ogre_env_var = "OGRE_PATH";
++  custom_ogre_path = getenv(ogre_env_var);
++  if(custom_ogre_path) {
++    prefix_path = std::string(custom_ogre_path);
++  }
++  set_ogre_plugin_directory(prefix_path + "/lib/OGRE/");
+ #endif
+ }
+ 
+diff --git a/rviz_rendering_tests/CMakeLists.txt b/rviz_rendering_tests/CMakeLists.txt
+index 2cf52d09..676f1e6f 100644
+--- a/rviz_rendering_tests/CMakeLists.txt
++++ b/rviz_rendering_tests/CMakeLists.txt
+@@ -29,8 +29,8 @@ endif()
+ find_package(ament_cmake REQUIRED)
+ 
+ if(BUILD_TESTING)
+-  # do find_package(rviz_ogre_vendor) first to make sure the custom OGRE is found
+-  find_package(rviz_ogre_vendor REQUIRED)
++  # do find_package(OGRE) first to make sure the custom OGRE is found
++  find_package(OGRE REQUIRED)
+   find_package(Qt5 REQUIRED COMPONENTS Widgets)
+   find_package(rviz_rendering REQUIRED)
+   find_package(resource_retriever REQUIRED)
+@@ -67,7 +67,7 @@ if(BUILD_TESTING)
+     ${SKIP_DISPLAY_TESTS})
+   if(TARGET mesh_loader_test_target)
+     target_link_libraries(mesh_loader_test_target
+-      rviz_ogre_vendor::OgreMain
++      OgreMain
+       rviz_rendering::rviz_rendering
+       resource_retriever::resource_retriever
+     )
+diff --git a/rviz_visual_testing_framework/CMakeLists.txt b/rviz_visual_testing_framework/CMakeLists.txt
+index 72e9c60c..6423c6ca 100644
+--- a/rviz_visual_testing_framework/CMakeLists.txt
++++ b/rviz_visual_testing_framework/CMakeLists.txt
+@@ -24,9 +24,10 @@ endif()
+ 
+ find_package(ament_cmake REQUIRED)
+ 
++find_package(assimp REQUIRED)
+ find_package(rviz_common REQUIRED)
+ 
+-find_package(rviz_ogre_vendor REQUIRED)
++find_package(OGRE REQUIRED)
+ 
+ find_package(Qt5 REQUIRED COMPONENTS Widgets Test)
+ 
+@@ -79,10 +80,10 @@ add_library(rviz_visual_testing_framework STATIC ${visual_test_framework_source_
+ target_include_directories(rviz_visual_testing_framework
+   PUBLIC
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+-    ${GTEST_INCLUDE_DIRS})
++    )
+ 
+ target_link_libraries(rviz_visual_testing_framework
+-  ${visual_tests_target_libaries})
++  ${visual_tests_target_libaries} GTest::gtest)
+ 
+ # export information to downstream packages
+ ament_export_targets(rviz_visual_testing_framework)

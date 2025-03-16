@@ -1,0 +1,19 @@
+diff --git a/osrf_testing_tools_cpp/CMakeLists.txt b/osrf_testing_tools_cpp/CMakeLists.txt
+index c45e710..8df3192 100644
+--- a/osrf_testing_tools_cpp/CMakeLists.txt
++++ b/osrf_testing_tools_cpp/CMakeLists.txt
+@@ -36,10 +36,10 @@ install(FILES
+   DESTINATION share/${PROJECT_NAME}/cmake
+ )
+ 
+-install(DIRECTORY vendor/
+-  DESTINATION share/${PROJECT_NAME}/vendor
+-  PATTERN ".gitattributes" EXCLUDE
+-)
++# install(DIRECTORY vendor/
++#   DESTINATION share/${PROJECT_NAME}/vendor
++#   PATTERN ".gitattributes" EXCLUDE
++# )
+ 
+ install(DIRECTORY cmake/
+   DESTINATION share/${PROJECT_NAME}/cmake

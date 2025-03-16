@@ -1,0 +1,114 @@
+diff --git a/rcl/CMakeLists.txt b/rcl/CMakeLists.txt
+index 934ef4a..d3277e2 100644
+--- a/rcl/CMakeLists.txt
++++ b/rcl/CMakeLists.txt
+@@ -67,15 +67,20 @@ target_include_directories(${PROJECT_NAME} PUBLIC
+   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+   "$<INSTALL_INTERFACE:include>")
+ # specific order: dependents before dependencies
+-ament_target_dependencies(${PROJECT_NAME}
+-  "rcl_interfaces"
+-  "rcl_yaml_param_parser"
+-  "rcutils"
+-  "rmw"
+-  "rmw_implementation"
+-  ${RCL_LOGGING_IMPL}
+-  "rosidl_runtime_c"
+-  "tracetools"
++target_link_libraries(${PROJECT_NAME} PUBLIC
++  # TODO(clalancette): rcl_interfaces should be PRIVATE, but downstream depends on it for now
++  ${rcl_interfaces_TARGETS}
++  rcl_yaml_param_parser::rcl_yaml_param_parser
++  rcutils::rcutils
++  rmw::rmw
++  # TODO(clalancette): rmw_implementation should be PRIVATE, but downstream depends on it for now
++  rmw_implementation::rmw_implementation
++  rosidl_runtime_c::rosidl_runtime_c
++)
++target_link_libraries(${PROJECT_NAME} PRIVATE
++  ${RCL_LOGGING_IMPL}::${RCL_LOGGING_IMPL}
++  tracetools::tracetools
++  yaml
+ )
+ 
+ # Causes the visibility macros to use dllexport rather than dllimport,
+diff --git a/rcl/package.xml b/rcl/package.xml
+index 6b218a7..a857bd0 100644
+--- a/rcl/package.xml
++++ b/rcl/package.xml
+@@ -28,7 +28,6 @@
+   <test_depend>launch</test_depend>
+   <test_depend>launch_testing</test_depend>
+   <test_depend>launch_testing_ament_cmake</test_depend>
+-  <test_depend>mimick_vendor</test_depend>
+   <test_depend>osrf_testing_tools_cpp</test_depend>
+   <test_depend>rcpputils</test_depend>
+   <test_depend>rmw</test_depend>
+diff --git a/rcl/test/CMakeLists.txt b/rcl/test/CMakeLists.txt
+index 7be2de6..30e9933 100644
+--- a/rcl/test/CMakeLists.txt
++++ b/rcl/test/CMakeLists.txt
+@@ -1,11 +1,9 @@
+ find_package(ament_cmake_gtest REQUIRED)
+ find_package(launch_testing_ament_cmake REQUIRED)
+ 
+-find_package(mimick_vendor REQUIRED)
++find_package(mimick REQUIRED)
+ find_package(test_msgs REQUIRED)
+ 
+-find_package(mimick_vendor REQUIRED)
+-
+ find_package(rcpputils REQUIRED)
+ find_package(rmw_implementation_cmake REQUIRED)
+ 
+diff --git a/rcl_yaml_param_parser/CMakeLists.txt b/rcl_yaml_param_parser/CMakeLists.txt
+index 3498ea5..1cc65de 100644
+--- a/rcl_yaml_param_parser/CMakeLists.txt
++++ b/rcl_yaml_param_parser/CMakeLists.txt
+@@ -4,7 +4,7 @@ project(rcl_yaml_param_parser)
+ 
+ find_package(ament_cmake_ros REQUIRED)
+ find_package(rcutils REQUIRED)
+-find_package(libyaml_vendor REQUIRED)
++find_package(yaml REQUIRED)
+ 
+ # Default to C++14
+ if(NOT CMAKE_CXX_STANDARD)
+@@ -30,7 +30,8 @@ add_library(
+ target_include_directories(${PROJECT_NAME} PUBLIC
+   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+   "$<INSTALL_INTERFACE:include>")
+-ament_target_dependencies(${PROJECT_NAME} "libyaml_vendor" "rcutils")
++target_link_libraries(${PROJECT_NAME} "yaml")
++ament_target_dependencies(${PROJECT_NAME} "rcutils")
+ 
+ # Set the visibility to hidden by default if possible
+ if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+@@ -145,7 +146,7 @@ if(BUILD_TESTING)
+   endif()
+ endif()
+ 
+-ament_export_dependencies(ament_cmake libyaml_vendor)
++ament_export_dependencies(ament_cmake yaml)
+ ament_export_include_directories(include)
+ install(
+   DIRECTORY include/
+diff --git a/rcl_yaml_param_parser/package.xml b/rcl_yaml_param_parser/package.xml
+index 7e2f086..0b76c62 100644
+--- a/rcl_yaml_param_parser/package.xml
++++ b/rcl_yaml_param_parser/package.xml
+@@ -9,14 +9,12 @@
+ 
+   <buildtool_depend>ament_cmake_ros</buildtool_depend>
+ 
+-  <depend>libyaml_vendor</depend>
+   <depend>yaml</depend>
+   <build_depend>rcutils</build_depend>
+ 
+   <test_depend>ament_cmake_gtest</test_depend>
+   <test_depend>ament_lint_common</test_depend>
+   <test_depend>ament_lint_auto</test_depend>
+-  <test_depend>mimick_vendor</test_depend>
+   <test_depend>osrf_testing_tools_cpp</test_depend>
+   <test_depend>performance_test_fixture</test_depend>
+   <test_depend>rcpputils</test_depend>

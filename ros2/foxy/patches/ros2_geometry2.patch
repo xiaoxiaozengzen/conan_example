@@ -1,0 +1,58 @@
+diff --git a/tf2/CMakeLists.txt b/tf2/CMakeLists.txt
+index 41ddad3e..c4edfbb7 100644
+--- a/tf2/CMakeLists.txt
++++ b/tf2/CMakeLists.txt
+@@ -7,7 +7,6 @@ if(NOT CMAKE_CXX_STANDARD)
+ endif()
+ 
+ find_package(ament_cmake)
+-find_package(console_bridge_vendor REQUIRED) # Provides console_bridge 0.4.0 on platforms without it.
+ find_package(console_bridge REQUIRED)
+ find_package(geometry_msgs REQUIRED)
+ find_package(rcutils REQUIRED)
+@@ -20,8 +19,8 @@ target_include_directories(tf2 PUBLIC
+   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/bt>"
+   "$<INSTALL_INTERFACE:include>")
++target_link_libraries(tf2 console_bridge::console_bridge)
+ ament_target_dependencies(tf2
+-  "console_bridge"
+   "geometry_msgs"
+   "rcutils"
+ )
+@@ -86,7 +85,7 @@ if(BUILD_TESTING)
+ 
+ endif()
+ 
+-ament_export_dependencies(console_bridge geometry_msgs rcutils)
++ament_export_dependencies(geometry_msgs rcutils console_bridge)
+ ament_export_include_directories(include)
+ ament_export_libraries(tf2)
+ ament_export_targets(tf2)
+diff --git a/tf2/package.xml b/tf2/package.xml
+index 4bff5dfb..b965ec7e 100644
+--- a/tf2/package.xml
++++ b/tf2/package.xml
+@@ -20,7 +20,6 @@
+ 
+   <buildtool_depend>ament_cmake</buildtool_depend>
+ 
+-  <depend>console_bridge_vendor</depend>
+   <depend>geometry_msgs</depend>
+   <depend>libconsole-bridge-dev</depend>
+   <depend>rcutils</depend>
+diff --git a/tf2_eigen_kdl/CMakeLists.txt b/tf2_eigen_kdl/CMakeLists.txt
+index b0b150a4..e5feed5b 100644
+--- a/tf2_eigen_kdl/CMakeLists.txt
++++ b/tf2_eigen_kdl/CMakeLists.txt
+@@ -21,9 +21,8 @@ add_library(${PROJECT_NAME} SHARED
+ target_include_directories(${PROJECT_NAME} PUBLIC
+   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+   "$<INSTALL_INTERFACE:include>")
++target_link_libraries(${PROJECT_NAME} Eigen3::Eigen)
+ ament_target_dependencies(${PROJECT_NAME}
+-  Eigen3
+-  eigen3_cmake_module
+   orocos_kdl
+   tf2
+ )

@@ -1,0 +1,25 @@
+diff --git a/orocos_kdl/CMakeLists.txt b/orocos_kdl/CMakeLists.txt
+index b401ad1..fe0bd11 100644
+--- a/orocos_kdl/CMakeLists.txt
++++ b/orocos_kdl/CMakeLists.txt
+@@ -51,7 +51,6 @@ SET( KDL_CFLAGS "")
+ find_package(eigen3_cmake_module QUIET)
+ find_package(Eigen3 QUIET)
+ message(STATUS "Using Eigen3 include dirs: ${Eigen3_INCLUDE_DIRS}")
+-include_directories(${Eigen3_INCLUDE_DIRS})
+ SET(KDL_CFLAGS "${KDL_CFLAGS} -I${Eigen3_INCLUDE_DIRS}")
+ 
+ # Check the platform STL containers capabilities
+diff --git a/orocos_kdl/src/CMakeLists.txt b/orocos_kdl/src/CMakeLists.txt
+index b4e3950..3dcc0e4 100644
+--- a/orocos_kdl/src/CMakeLists.txt
++++ b/orocos_kdl/src/CMakeLists.txt
+@@ -112,7 +112,7 @@ SET_TARGET_PROPERTIES( orocos-kdl PROPERTIES
+   COMPILE_FLAGS "${CMAKE_CXX_FLAGS_ADD} ${KDL_CFLAGS}"
+   PUBLIC_HEADER "${KDL_HPPS};${CMAKE_CURRENT_BINARY_DIR}/config.h"
+   )
+-TARGET_INCLUDE_DIRECTORIES(orocos-kdl PUBLIC ${Eigen3_INCLUDE_DIRS})
++TARGET_LINK_LIBRARIES(orocos-kdl PUBLIC Eigen3::Eigen)
+ 
+ #### Settings for rpath disabled (back-compatibility)
+ IF(${CMAKE_MINIMUM_REQUIRED_VERSION} VERSION_GREATER "2.8.12")

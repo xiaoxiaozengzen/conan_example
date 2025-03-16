@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package InputOutputDataProto;
+// 变量名不要使用大写字母
+
+message Quaternion {
+  double qw = 1;
+  double qx = 2;
+  double qy = 3;
+  double qz = 4;
+}
+

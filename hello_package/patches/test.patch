@@ -1,0 +1,35 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 93b7120..4211b03 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -36,12 +36,12 @@ target_include_directories(hello PUBLIC
+ 
+ target_link_libraries(hello PUBLIC ${protobuf_LIBRARIES})
+ 
+-# add_library(hello_main src/hello_main.cpp)
+-# target_include_directories(hello_main PUBLIC
+-#   ${CMAKE_CURRENT_SOURCE_DIR}/include
+-#   ${protobuf_INCLUDE_DIRS}
+-#   ${CMAKE_CURRENT_BINARY_DIR}
+-# )
++add_library(hello_main src/hello_main.cpp)
++target_include_directories(hello_main PUBLIC
++  ${CMAKE_CURRENT_SOURCE_DIR}/include
++  ${protobuf_INCLUDE_DIRS}
++  ${CMAKE_CURRENT_BINARY_DIR}
++)
+ 
+ if(DEFINED BUILD_TESTING)
+     message(STATUS "${CMAKE_CURRENT_LINE} HELLO BUILD_TESTING is defined: ${BUILD_TESTING}")
+diff --git a/include/hello.h b/include/hello.h
+index 61ee711..ef7a5ac 100644
+--- a/include/hello.h
++++ b/include/hello.h
+@@ -10,6 +10,6 @@
+ #endif
+ 
+ hello_EXPORT void hello();
+-// hello_EXPORT void hello_main();
++hello_EXPORT void hello_main();
+ 
+ void message();

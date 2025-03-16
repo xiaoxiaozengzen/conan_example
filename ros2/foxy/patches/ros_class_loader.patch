@@ -1,0 +1,39 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index de9a6e8..6d08773 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -16,7 +16,6 @@ if(NOT CLASS_LOADER_IGNORE_AMENT)
+   find_package(ament_cmake)
+ endif()
+ 
+-find_package(console_bridge_vendor REQUIRED) # Provides console_bridge 0.4.0 on platforms without it.
+ find_package(console_bridge REQUIRED)
+ 
+ find_package(rcpputils REQUIRED)
+@@ -39,7 +38,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
+   "$<INSTALL_INTERFACE:include>")
+ 
+ if(ament_cmake_FOUND)
+-  ament_target_dependencies(${PROJECT_NAME} "console_bridge" "rcpputils")
++  target_link_libraries(${PROJECT_NAME} console_bridge::console_bridge)
++  ament_target_dependencies(${PROJECT_NAME} "rcpputils")
+   ament_export_libraries(${PROJECT_NAME})
+   ament_export_targets(${PROJECT_NAME})
+ else()
+diff --git a/package.xml b/package.xml
+index 4f6dfd1..b7370d3 100644
+--- a/package.xml
++++ b/package.xml
+@@ -13,12 +13,10 @@
+   <author>Mirza Shah</author>
+   <author>Dirk Thomas</author>
+ 
+-  <build_depend>console_bridge_vendor</build_depend>
+   <build_depend>libconsole-bridge-dev</build_depend>
+ 
+   <buildtool_depend>ament_cmake</buildtool_depend>
+ 
+-  <exec_depend>console_bridge_vendor</exec_depend>
+   <exec_depend>libconsole-bridge-dev</exec_depend>
+ 
+   <depend>rcpputils</depend>

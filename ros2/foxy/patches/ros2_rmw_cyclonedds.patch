@@ -1,0 +1,75 @@
+diff --git a/rmw_cyclonedds_cpp/CMakeLists.txt b/rmw_cyclonedds_cpp/CMakeLists.txt
+index 4111a73..dfd3ac6 100644
+--- a/rmw_cyclonedds_cpp/CMakeLists.txt
++++ b/rmw_cyclonedds_cpp/CMakeLists.txt
+@@ -31,12 +31,12 @@ find_package(rcutils REQUIRED)
+ find_package(rcpputils REQUIRED)
+ 
+ #find_package(cyclonedds_cmake_module REQUIRED)
+-find_package(CycloneDDS QUIET CONFIG)
+-if(NOT CycloneDDS_FOUND)
+-  message(WARNING "Could not find Eclipse Cyclone DDS - skipping '${PROJECT_NAME}'")
+-  ament_package()
+-  return()
+-endif()
++find_package(CycloneDDS CONFIG)
++#if(NOT CycloneDDS_FOUND)
++#  message(WARNING "Could not find Eclipse Cyclone DDS - skipping '${PROJECT_NAME}'")
++#  ament_package()
++#  return()
++#endif()
+ 
+ find_package(rmw REQUIRED)
+ find_package(rmw_dds_common REQUIRED)
+@@ -44,6 +44,7 @@ find_package(rosidl_runtime_c REQUIRED)
+ find_package(rosidl_typesupport_introspection_c REQUIRED)
+ find_package(rosidl_typesupport_introspection_cpp REQUIRED)
+ 
++ament_export_dependencies(CycloneDDS)
+ ament_export_dependencies(rcutils)
+ ament_export_dependencies(rcpputils)
+ ament_export_dependencies(rmw)
+@@ -68,9 +69,9 @@ target_include_directories(rmw_cyclonedds_cpp PUBLIC
+   $<INSTALL_INTERFACE:include>
+ )
+ 
+-target_link_libraries(rmw_cyclonedds_cpp
+-  CycloneDDS::ddsc
+-)
++#target_link_libraries(rmw_cyclonedds_cpp
++#  CycloneDDS::ddsc
++#)
+ if(CMAKE_GENERATOR_PLATFORM)
+   set(TARGET_ARCH "${CMAKE_GENERATOR_PLATFORM}")
+ else()
+@@ -79,18 +80,21 @@ endif()
+ 
+ if(CMAKE_COMPILER_IS_GNUCXX AND TARGET_ARCH MATCHES "^(riscv|RISCV)64$")
+   # using GCC, libatomic is not automatically linked for RISC-V
+-  target_link_libraries(rmw_cyclonedds_cpp -latomic)
++  target_link_libraries(rmw_cyclonedds_cpp PUBLIC -latomic)
+ endif()
+ 
++target_link_libraries(rmw_cyclonedds_cpp PUBLIC
++    rmw::rmw
++)
+ 
+-ament_target_dependencies(rmw_cyclonedds_cpp
+-  "rcutils"
+-  "rcpputils"
+-  "rosidl_typesupport_introspection_c"
+-  "rosidl_typesupport_introspection_cpp"
+-  "rmw"
+-  "rmw_dds_common"
+-  "rosidl_runtime_c"
++target_link_libraries(rmw_cyclonedds_cpp PRIVATE
++  CycloneDDS
++  rcutils::rcutils
++  rcpputils::rcpputils
++  rmw_dds_common::rmw_dds_common_library
++  rosidl_typesupport_introspection_c::rosidl_typesupport_introspection_c
++  rosidl_typesupport_introspection_cpp::rosidl_typesupport_introspection_cpp
++  rosidl_runtime_c::rosidl_runtime_c
+ )
+ 
+ configure_rmw_library(rmw_cyclonedds_cpp)

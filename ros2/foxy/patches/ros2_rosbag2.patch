@@ -1,0 +1,259 @@
+diff --git a/rosbag2/package.xml b/rosbag2/package.xml
+index b427fa9..8c47749 100644
+--- a/rosbag2/package.xml
++++ b/rosbag2/package.xml
+@@ -16,12 +16,10 @@
+   <exec_depend>rosbag2_py</exec_depend>
+   <exec_depend>rosbag2_storage</exec_depend>
+   <exec_depend>rosbag2_transport</exec_depend>
+-  <exec_depend>shared_queues_vendor</exec_depend>
+ 
+   <!-- Default plugins -->
+   <exec_depend>rosbag2_compression_zstd</exec_depend>
+   <exec_depend>rosbag2_storage_default_plugins</exec_depend>
+-  <exec_depend>sqlite3_vendor</exec_depend>
+ 
+   <test_depend>rosbag2_test_common</test_depend>
+   <test_depend>rosbag2_tests</test_depend>
+diff --git a/rosbag2_compression_zstd/CMakeLists.txt b/rosbag2_compression_zstd/CMakeLists.txt
+index ea6f677..ec88abc 100644
+--- a/rosbag2_compression_zstd/CMakeLists.txt
++++ b/rosbag2_compression_zstd/CMakeLists.txt
+@@ -24,7 +24,6 @@ find_package(ament_cmake REQUIRED)
+ find_package(pluginlib REQUIRED)
+ find_package(rcpputils REQUIRED)
+ find_package(rosbag2_compression REQUIRED)
+-find_package(zstd_vendor REQUIRED)
+ find_package(zstd REQUIRED)
+ 
+ add_library(${PROJECT_NAME} SHARED
+@@ -60,7 +59,7 @@ ament_export_include_directories(include)
+ ament_export_libraries(${PROJECT_NAME})
+ ament_export_targets(export_${PROJECT_NAME})
+ # order matters here, first vendor, then zstd
+-ament_export_dependencies(rcpputils rosbag2_compression zstd_vendor zstd)
++ament_export_dependencies(rcpputils rosbag2_compression zstd)
+ 
+ 
+ if(BUILD_TESTING)
+diff --git a/rosbag2_performance/rosbag2_performance_benchmarking/CMakeLists.txt b/rosbag2_performance/rosbag2_performance_benchmarking/CMakeLists.txt
+index 7a54f6d..ba40dc3 100644
+--- a/rosbag2_performance/rosbag2_performance_benchmarking/CMakeLists.txt
++++ b/rosbag2_performance/rosbag2_performance_benchmarking/CMakeLists.txt
+@@ -20,7 +20,7 @@ if(BUILD_ROSBAG2_BENCHMARKS)
+   find_package(rosbag2_storage REQUIRED)
+   find_package(rmw REQUIRED)
+   find_package(std_msgs REQUIRED)
+-  find_package(yaml_cpp_vendor REQUIRED)
++  find_package(yaml-cpp REQUIRED)
+ 
+   add_executable(writer_benchmark
+     src/config_utils.cpp
+@@ -42,14 +42,14 @@ if(BUILD_ROSBAG2_BENCHMARKS)
+     rosbag2_compression
+     rosbag2_cpp
+     rosbag2_storage
+-    yaml_cpp_vendor
++    yaml-cpp
+   )
+ 
+   ament_target_dependencies(benchmark_publishers
+     rclcpp
+     rosbag2_storage
+     std_msgs
+-    yaml_cpp_vendor
++    yaml-cpp
+   )
+ 
+   ament_target_dependencies(results_writer
+diff --git a/rosbag2_py/CMakeLists.txt b/rosbag2_py/CMakeLists.txt
+index d354a97..82a93f9 100644
+--- a/rosbag2_py/CMakeLists.txt
++++ b/rosbag2_py/CMakeLists.txt
+@@ -32,6 +32,19 @@ if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+ endif()
+ 
+ find_package(pybind11 REQUIRED)
++if(NOT COMMAND pybind11_add_module)
++foreach(INCDIR IN LISTS pybind11_INCLUDE_DIRS)
++	if(EXISTS "${INCDIR}/../lib/cmake/pybind11/pybind11Tools.cmake")
++		include("${INCDIR}/../lib/cmake/pybind11/pybind11Common.cmake")
++		include("${INCDIR}/../lib/cmake/pybind11/pybind11Tools.cmake")
++		break()
++	elseif(EXISTS "${INCDIR}/../../lib/cmake/pybind11/pybind11Tools.cmake")
++		include("${INCDIR}/../../lib/cmake/pybind11/pybind11Common.cmake")
++		include("${INCDIR}/../../lib/cmake/pybind11/pybind11Tools.cmake")
++		break()
++	endif()
++endforeach()
++endif()
+ 
+ if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+   # pybind11 logic for setting up a debug build when both a debug and release
+diff --git a/rosbag2_storage/CMakeLists.txt b/rosbag2_storage/CMakeLists.txt
+index fea976d..9adf304 100644
+--- a/rosbag2_storage/CMakeLists.txt
++++ b/rosbag2_storage/CMakeLists.txt
+@@ -24,7 +24,7 @@ find_package(ament_cmake REQUIRED)
+ find_package(pluginlib REQUIRED)
+ find_package(rcpputils REQUIRED)
+ find_package(rcutils REQUIRED)
+-find_package(yaml_cpp_vendor REQUIRED)
++find_package(yaml-cpp REQUIRED)
+ 
+ add_library(
+   ${PROJECT_NAME}
+@@ -38,12 +38,13 @@ target_include_directories(${PROJECT_NAME}
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+   $<INSTALL_INTERFACE:include>
+ )
++target_link_libraries(${PROJECT_NAME} yaml-cpp)
+ ament_target_dependencies(
+   ${PROJECT_NAME}
+   pluginlib
+   rcpputils
+   rcutils
+-  yaml_cpp_vendor)
++)
+ 
+ # Causes the visibility macros to use dllexport rather than dllimport,
+ # which is appropriate when building the dll but not consuming it.
+@@ -66,7 +67,7 @@ install(
+ ament_export_include_directories(include)
+ ament_export_libraries(${PROJECT_NAME})
+ ament_export_targets(export_${PROJECT_NAME})
+-ament_export_dependencies(pluginlib yaml_cpp_vendor)
++ament_export_dependencies(pluginlib yaml-cpp)
+ 
+ if(BUILD_TESTING)
+   find_package(ament_lint_auto REQUIRED)
+diff --git a/rosbag2_storage/package.xml b/rosbag2_storage/package.xml
+index 6e411d8..24e6884 100644
+--- a/rosbag2_storage/package.xml
++++ b/rosbag2_storage/package.xml
+@@ -13,7 +13,6 @@
+   <depend>pluginlib</depend>
+   <depend>rcpputils</depend>
+   <depend>rcutils</depend>
+-  <depend>yaml_cpp_vendor</depend>
+ 
+   <test_depend>ament_cmake_gtest</test_depend>
+   <test_depend>ament_cmake_gmock</test_depend>
+diff --git a/rosbag2_storage_default_plugins/CMakeLists.txt b/rosbag2_storage_default_plugins/CMakeLists.txt
+index a83a86a..53d8328 100644
+--- a/rosbag2_storage_default_plugins/CMakeLists.txt
++++ b/rosbag2_storage_default_plugins/CMakeLists.txt
+@@ -25,9 +25,9 @@ find_package(pluginlib REQUIRED)
+ find_package(rcpputils REQUIRED)
+ find_package(rcutils REQUIRED)
+ find_package(rosbag2_storage REQUIRED)
+-find_package(sqlite3_vendor REQUIRED)
++# find_package(sqlite3_vendor REQUIRED)
+ find_package(SQLite3 REQUIRED)  # provided by sqlite3_vendor
+-find_package(yaml_cpp_vendor REQUIRED)
++find_package(yaml-cpp REQUIRED)
+ 
+ add_library(${PROJECT_NAME} SHARED
+   src/rosbag2_storage_default_plugins/sqlite/sqlite_wrapper.cpp
+@@ -40,7 +40,7 @@ ament_target_dependencies(${PROJECT_NAME}
+   rcpputils
+   rcutils
+   SQLite3
+-  yaml_cpp_vendor)
++  yaml-cpp)
+ 
+ target_include_directories(${PROJECT_NAME}
+   PUBLIC
+@@ -67,7 +67,7 @@ install(
+ 
+ ament_export_include_directories(include)
+ ament_export_libraries(${PROJECT_NAME})
+-ament_export_dependencies(rosbag2_storage rcpputils rcutils sqlite3_vendor SQLite3)
++ament_export_dependencies(rosbag2_storage rcpputils rcutils SQLite3)
+ 
+ if(BUILD_TESTING)
+   find_package(ament_cmake_gmock REQUIRED)
+diff --git a/rosbag2_transport/CMakeLists.txt b/rosbag2_transport/CMakeLists.txt
+index df066a5..e3492c9 100644
+--- a/rosbag2_transport/CMakeLists.txt
++++ b/rosbag2_transport/CMakeLists.txt
+@@ -30,8 +30,8 @@ find_package(rosbag2_compression REQUIRED)
+ find_package(rosbag2_cpp REQUIRED)
+ find_package(rosbag2_storage REQUIRED)
+ find_package(rmw_implementation_cmake REQUIRED)
+-find_package(shared_queues_vendor REQUIRED)
+-find_package(yaml_cpp_vendor REQUIRED)
++find_package(readerwriterqueue REQUIRED)
++find_package(yaml-cpp REQUIRED)
+ 
+ add_library(${PROJECT_NAME} SHARED
+   src/rosbag2_transport/player.cpp
+@@ -44,6 +44,7 @@ add_library(${PROJECT_NAME} SHARED
+ target_include_directories(${PROJECT_NAME} PUBLIC
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+   $<INSTALL_INTERFACE:include>)
++target_link_libraries(${PROJECT_NAME} yaml-cpp readerwriterqueue::readerwriterqueue)
+ ament_target_dependencies(${PROJECT_NAME}
+   rcl
+   rclcpp
+@@ -52,8 +53,8 @@ ament_target_dependencies(${PROJECT_NAME}
+   rosbag2_compression
+   rosbag2_cpp
+   rosbag2_storage
+-  shared_queues_vendor
+-  yaml_cpp_vendor
++  #shared_queues_vendor
++  #yaml-cpp
+ )
+ 
+ include(cmake/configure_python.cmake)
+@@ -62,13 +63,12 @@ add_library(rosbag2_transport_py
+   SHARED
+   src/rosbag2_transport/rosbag2_transport_python.cpp)
+ configure_python_c_extension_library(rosbag2_transport_py)
+-target_link_libraries(rosbag2_transport_py rosbag2_transport)
++target_link_libraries(rosbag2_transport_py rosbag2_transport readerwriterqueue::readerwriterqueue)
+ ament_target_dependencies(rosbag2_transport_py
+   rosbag2_compression
+   rosbag2_cpp
+   rosbag2_storage
+   rmw
+-  shared_queues_vendor
+ )
+ # Causes the visibility macros to use dllexport rather than dllimport,
+ # which is appropriate when building the dll but not consuming it.
+@@ -89,7 +89,7 @@ install(
+ ament_export_include_directories(include)
+ ament_export_libraries(${PROJECT_NAME})
+ ament_export_targets(export_${PROJECT_NAME})
+-ament_export_dependencies(rosbag2_cpp rosbag2_compression shared_queues_vendor yaml_cpp_vendor)
++ament_export_dependencies(rosbag2_cpp rosbag2_compression yaml-cpp readerwriterqueue)
+ 
+ function(create_tests_for_rmw_implementation)
+   rosbag2_transport_add_gmock(test_record_all
+diff --git a/rosbag2_transport/package.xml b/rosbag2_transport/package.xml
+index faf588d..5f9b530 100644
+--- a/rosbag2_transport/package.xml
++++ b/rosbag2_transport/package.xml
+@@ -18,8 +18,6 @@
+   <depend>rosbag2_storage</depend>
+   <depend>rmw</depend>
+   <depend>rpyutils</depend>
+-  <depend>shared_queues_vendor</depend>
+-  <depend>yaml_cpp_vendor</depend>
+ 
+   <test_depend>ament_cmake_gmock</test_depend>
+   <test_depend>ament_index_cpp</test_depend>
+diff --git a/rosbag2_transport/src/rosbag2_transport/player.hpp b/rosbag2_transport/src/rosbag2_transport/player.hpp
+index cc7a612..95f2120 100644
+--- a/rosbag2_transport/src/rosbag2_transport/player.hpp
++++ b/rosbag2_transport/src/rosbag2_transport/player.hpp
+@@ -22,7 +22,7 @@
+ #include <string>
+ #include <unordered_map>
+ 
+-#include "moodycamel/readerwriterqueue.h"
++#include "readerwriterqueue/readerwriterqueue.h"
+ 
+ #include "rclcpp/qos.hpp"
+ 

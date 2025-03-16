@@ -1,0 +1,81 @@
+diff --git a/rmw_dds_common/CMakeLists.txt b/rmw_dds_common/CMakeLists.txt
+index 72c0cbc..13e3882 100644
+--- a/rmw_dds_common/CMakeLists.txt
++++ b/rmw_dds_common/CMakeLists.txt
+@@ -2,6 +2,22 @@ cmake_minimum_required(VERSION 3.5)
+ 
+ project(rmw_dds_common)
+ 
++
++function(rosidl_get_typesupport_target var generate_interfaces_target typesupport_name)
++  if(NOT TARGET ${generate_interfaces_target})
++    message(FATAL_ERROR
++      "${generate_interfaces_target} is not a CMake target. Maybe rosidl_generate_interfaces was given a different target name?")
++  endif()
++
++  set(output_target "${generate_interfaces_target}__${typesupport_name}")
++
++  if(NOT TARGET ${output_target})
++    message(FATAL_ERROR "${output_target} is not a CMake target - maybe the typesupport '${typesupport_name}' doesn't exist?")
++  endif()
++
++  set("${var}" "${output_target}" PARENT_SCOPE)
++endfunction()
++
+ # Default to C++14
+ if(NOT CMAKE_CXX_STANDARD)
+   set(CMAKE_CXX_STANDARD 14)
+@@ -16,6 +32,7 @@ find_package(rcpputils REQUIRED)
+ find_package(rcutils REQUIRED)
+ find_package(rmw REQUIRED)
+ find_package(rosidl_default_generators REQUIRED)
++find_package(rosidl_runtime_c REQUIRED)
+ 
+ ament_export_dependencies(ament_cmake_core)
+ ament_export_dependencies(rcpputils)
+@@ -30,18 +47,25 @@ rosidl_generate_interfaces(
+   "msg/ParticipantEntitiesInfo.msg"
+ )
+ 
+-add_library(${PROJECT_NAME}_library SHARED
++add_library(${PROJECT_NAME}_library
+   src/gid_utils.cpp
+   src/graph_cache.cpp)
+ set_target_properties(${PROJECT_NAME}_library
+   PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+-ament_target_dependencies(${PROJECT_NAME}_library
+-  "rcpputils"
+-  "rcutils"
+-  "rmw"
+-  "rosidl_runtime_cpp")
++target_link_libraries(${PROJECT_NAME}_library PUBLIC
++  rcutils::rcutils
++  rmw::rmw)
++target_link_libraries(${PROJECT_NAME}_library PRIVATE
++  rcpputils::rcpputils
++  rosidl_runtime_c::rosidl_runtime_c)
+ add_dependencies(${PROJECT_NAME}_library
+   ${PROJECT_NAME})
++
++# Depend on the generated C++ messages
++rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
++target_link_libraries(${PROJECT_NAME}_library PUBLIC
++  ${cpp_typesupport_target})
++
+ target_include_directories(${PROJECT_NAME}_library
+   PUBLIC
+   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+diff --git a/rmw_dds_common/package.xml b/rmw_dds_common/package.xml
+index 80105fc..a9e2f88 100644
+--- a/rmw_dds_common/package.xml
++++ b/rmw_dds_common/package.xml
+@@ -10,6 +10,9 @@
+ 
+   <buildtool_depend>ament_cmake</buildtool_depend>
+   <buildtool_depend>rosidl_default_generators</buildtool_depend>
++  <buildtool_depend>numpy_vendor</buildtool_depend>
++  <buildtool_depend>numpy_vendor</buildtool_depend>
++  <buildtool_depend>numpy_vendor</buildtool_depend>
+ 
+   <exec_depend>rosidl_default_runtime</exec_depend>
+ 

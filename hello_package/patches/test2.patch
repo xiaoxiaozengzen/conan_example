@@ -1,0 +1,23 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 24bcf06..79fc826 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -4,6 +4,6 @@ project(hello CXX)
+ add_library(hello hello.cpp)
+ target_include_directories(hello PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+ 
+-# add_library(hello_main hello_main.cpp)
+-# target_include_directories(hello_main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
++add_library(hello_main hello_main.cpp)
++target_include_directories(hello_main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+ 
+diff --git a/hello.h b/hello.h
+index cc452b9..40632db 100644
+--- a/hello.h
++++ b/hello.h
+@@ -7,4 +7,4 @@
+ #endif
+ 
+ hello_EXPORT void hello();
+-// hello_EXPORT void hello_main();
++hello_EXPORT void hello_main();

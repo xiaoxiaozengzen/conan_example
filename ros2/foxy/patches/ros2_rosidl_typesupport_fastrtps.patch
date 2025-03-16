@@ -1,0 +1,180 @@
+diff --git a/fastrtps_cmake_module/cmake/Modules/FindFastRTPS.cmake b/fastrtps_cmake_module/cmake/Modules/FindFastRTPS.cmake
+index aafd2b6..e9797fc 100644
+--- a/fastrtps_cmake_module/cmake/Modules/FindFastRTPS.cmake
++++ b/fastrtps_cmake_module/cmake/Modules/FindFastRTPS.cmake
+@@ -34,7 +34,7 @@
+ set(FastRTPS_FOUND FALSE)
+ 
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ 
+ string(REGEX MATCH "^[0-9]+\\.[0-9]+" fastcdr_MAJOR_MINOR_VERSION "${fastcdr_VERSION}")
+ string(REGEX MATCH "^[0-9]+\\.[0-9]+" fastrtps_MAJOR_MINOR_VERSION "${fastrtps_VERSION}")
+diff --git a/rosidl_typesupport_fastrtps_c/CMakeLists.txt b/rosidl_typesupport_fastrtps_c/CMakeLists.txt
+index fa48176..e45818a 100644
+--- a/rosidl_typesupport_fastrtps_c/CMakeLists.txt
++++ b/rosidl_typesupport_fastrtps_c/CMakeLists.txt
+@@ -28,7 +28,7 @@ find_package(ament_cmake_ros REQUIRED)
+ 
+ find_package(fastrtps_cmake_module REQUIRED)
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ find_package(FastRTPS REQUIRED MODULE)
+ if(FASTRTPS_STATIC_DISABLE)
+   ament_package()
+diff --git a/rosidl_typesupport_fastrtps_c/cmake/rosidl_typesupport_fastrtps_c_generate_interfaces.cmake b/rosidl_typesupport_fastrtps_c/cmake/rosidl_typesupport_fastrtps_c_generate_interfaces.cmake
+index a69b56c..9013edb 100644
+--- a/rosidl_typesupport_fastrtps_c/cmake/rosidl_typesupport_fastrtps_c_generate_interfaces.cmake
++++ b/rosidl_typesupport_fastrtps_c/cmake/rosidl_typesupport_fastrtps_c_generate_interfaces.cmake
+@@ -15,7 +15,7 @@
+ find_package(ament_cmake_ros REQUIRED)
+ find_package(fastrtps_cmake_module QUIET)
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ find_package(FastRTPS REQUIRED MODULE)
+ 
+ set(_output_path "${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_c/${PROJECT_NAME}")
+@@ -100,7 +100,7 @@ endif()
+ set_target_properties(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+   PROPERTIES CXX_STANDARD 14)
+ ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+-  "fastrtps"
++  "fastdds"
+   "rmw"
+   "rosidl_runtime_c"
+   "rosidl_typesupport_fastrtps_cpp"
+@@ -129,7 +129,7 @@ target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+   ${CMAKE_CURRENT_BINARY_DIR}/rosidl_typesupport_fastrtps_cpp
+ )
+ ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+-  "fastrtps"
++  "fastdds"
+   "rosidl_typesupport_fastrtps_cpp"
+   "rosidl_typesupport_fastrtps_c"
+ )
+diff --git a/rosidl_typesupport_fastrtps_c/package.xml b/rosidl_typesupport_fastrtps_c/package.xml
+index 8b87b12..71cad39 100644
+--- a/rosidl_typesupport_fastrtps_c/package.xml
++++ b/rosidl_typesupport_fastrtps_c/package.xml
+@@ -11,7 +11,7 @@
+   <buildtool_depend>ament_cmake_ros</buildtool_depend>
+   <buildtool_depend>fastrtps_cmake_module</buildtool_depend>
+   <buildtool_depend>fastcdr</buildtool_depend>
+-  <buildtool_depend>fastrtps</buildtool_depend>
++  <buildtool_depend>fastdds</buildtool_depend>
+   <buildtool_depend>rosidl_cmake</buildtool_depend>
+   <buildtool_depend>rosidl_runtime_c</buildtool_depend>
+   <buildtool_depend>rosidl_typesupport_fastrtps_cpp</buildtool_depend>
+@@ -19,7 +19,7 @@
+   <buildtool_export_depend>ament_cmake_ros</buildtool_export_depend>
+   <buildtool_export_depend>fastrtps_cmake_module</buildtool_export_depend>
+   <buildtool_export_depend>fastcdr</buildtool_export_depend>
+-  <buildtool_export_depend>fastrtps</buildtool_export_depend>
++  <buildtool_export_depend>fastdds</buildtool_export_depend>
+   <buildtool_export_depend>rosidl_cmake</buildtool_export_depend>
+   <buildtool_export_depend>rosidl_runtime_c</buildtool_export_depend>
+   <buildtool_export_depend>rosidl_typesupport_fastrtps_cpp</buildtool_export_depend>
+diff --git a/rosidl_typesupport_fastrtps_c/rosidl_typesupport_fastrtps_c-extras.cmake.in b/rosidl_typesupport_fastrtps_c/rosidl_typesupport_fastrtps_c-extras.cmake.in
+index 39aab74..54413d6 100644
+--- a/rosidl_typesupport_fastrtps_c/rosidl_typesupport_fastrtps_c-extras.cmake.in
++++ b/rosidl_typesupport_fastrtps_c/rosidl_typesupport_fastrtps_c-extras.cmake.in
+@@ -3,7 +3,7 @@
+ 
+ find_package(fastrtps_cmake_module QUIET)
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ find_package(FastRTPS REQUIRED MODULE)
+ 
+ if(NOT FastRTPS_FOUND)
+diff --git a/rosidl_typesupport_fastrtps_cpp/CMakeLists.txt b/rosidl_typesupport_fastrtps_cpp/CMakeLists.txt
+index af40422..28557ed 100644
+--- a/rosidl_typesupport_fastrtps_cpp/CMakeLists.txt
++++ b/rosidl_typesupport_fastrtps_cpp/CMakeLists.txt
+@@ -23,7 +23,7 @@ find_package(ament_cmake REQUIRED)
+ 
+ find_package(fastrtps_cmake_module QUIET)
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ find_package(FastRTPS REQUIRED MODULE)
+ if(FASTRTPS_STATIC_DISABLE)
+   ament_package()
+@@ -33,7 +33,7 @@ endif()
+ 
+ find_package(ament_cmake_python REQUIRED)
+ 
+-ament_export_dependencies(fastrtps)
++ament_export_dependencies(fastdds)
+ ament_export_dependencies(rmw)
+ ament_export_dependencies(rosidl_cmake)
+ ament_export_dependencies(rosidl_runtime_c)
+diff --git a/rosidl_typesupport_fastrtps_cpp/cmake/rosidl_typesupport_fastrtps_cpp_generate_interfaces.cmake b/rosidl_typesupport_fastrtps_cpp/cmake/rosidl_typesupport_fastrtps_cpp_generate_interfaces.cmake
+index e1acc36..40d7b89 100644
+--- a/rosidl_typesupport_fastrtps_cpp/cmake/rosidl_typesupport_fastrtps_cpp_generate_interfaces.cmake
++++ b/rosidl_typesupport_fastrtps_cpp/cmake/rosidl_typesupport_fastrtps_cpp_generate_interfaces.cmake
+@@ -15,7 +15,7 @@
+ find_package(ament_cmake_ros REQUIRED)
+ find_package(fastrtps_cmake_module QUIET)
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ find_package(FastRTPS REQUIRED MODULE)
+ 
+ 
+@@ -141,7 +141,7 @@ target_include_directories(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+ )
+ 
+ ament_target_dependencies(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+-  "fastrtps"
++  "fastdds"
+   "rmw"
+   "rosidl_runtime_c"
+   "rosidl_typesupport_fastrtps_cpp"
+@@ -157,7 +157,7 @@ endforeach()
+ 
+ target_link_libraries(${rosidl_generate_interfaces_TARGET}${_target_suffix}
+   ${rosidl_generate_interfaces_TARGET}__rosidl_generator_cpp
+-  fastrtps fastcdr)
++  fastrtps fastcdr)
+ 
+ # Make top level generation target depend on this library
+ add_dependencies(
+diff --git a/rosidl_typesupport_fastrtps_cpp/package.xml b/rosidl_typesupport_fastrtps_cpp/package.xml
+index b1445bf..aede980 100644
+--- a/rosidl_typesupport_fastrtps_cpp/package.xml
++++ b/rosidl_typesupport_fastrtps_cpp/package.xml
+@@ -11,7 +11,7 @@
+   <buildtool_depend>ament_cmake</buildtool_depend>
+   <buildtool_depend>fastrtps_cmake_module</buildtool_depend>
+   <buildtool_depend>fastcdr</buildtool_depend>
+-  <buildtool_depend>fastrtps</buildtool_depend>
++  <buildtool_depend>fastdds</buildtool_depend>
+   <buildtool_depend>rosidl_cmake</buildtool_depend>
+   <buildtool_depend>rosidl_runtime_c</buildtool_depend>
+   <buildtool_depend>rosidl_runtime_cpp</buildtool_depend>
+@@ -19,7 +19,7 @@
+   <buildtool_export_depend>ament_cmake_ros</buildtool_export_depend>
+   <buildtool_export_depend>fastrtps_cmake_module</buildtool_export_depend>
+   <buildtool_export_depend>fastcdr</buildtool_export_depend>
+-  <buildtool_export_depend>fastrtps</buildtool_export_depend>
++  <buildtool_export_depend>fastdds</buildtool_export_depend>
+   <buildtool_export_depend>rosidl_cmake</buildtool_export_depend>
+   <buildtool_export_depend>rosidl_runtime_c</buildtool_export_depend>
+   <buildtool_export_depend>rosidl_runtime_cpp</buildtool_export_depend>
+diff --git a/rosidl_typesupport_fastrtps_cpp/rosidl_typesupport_fastrtps_cpp-extras.cmake.in b/rosidl_typesupport_fastrtps_cpp/rosidl_typesupport_fastrtps_cpp-extras.cmake.in
+index fd0dc69..657b97b 100644
+--- a/rosidl_typesupport_fastrtps_cpp/rosidl_typesupport_fastrtps_cpp-extras.cmake.in
++++ b/rosidl_typesupport_fastrtps_cpp/rosidl_typesupport_fastrtps_cpp-extras.cmake.in
+@@ -4,7 +4,7 @@
+ 
+ find_package(fastrtps_cmake_module QUIET)
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ find_package(FastRTPS REQUIRED MODULE)
+ 
+ if(NOT FastRTPS_FOUND)

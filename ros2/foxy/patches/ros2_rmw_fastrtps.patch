@@ -1,0 +1,78 @@
+diff --git a/rmw_fastrtps_cpp/CMakeLists.txt b/rmw_fastrtps_cpp/CMakeLists.txt
+index f929523..4ec9441 100644
+--- a/rmw_fastrtps_cpp/CMakeLists.txt
++++ b/rmw_fastrtps_cpp/CMakeLists.txt
+@@ -38,7 +38,7 @@ find_package(rmw_fastrtps_shared_cpp REQUIRED)
+ 
+ find_package(fastrtps_cmake_module REQUIRED)
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ find_package(FastRTPS REQUIRED MODULE)
+ 
+ find_package(rmw REQUIRED)
+diff --git a/rmw_fastrtps_cpp/rmw_fastrtps_cpp-extras.cmake b/rmw_fastrtps_cpp/rmw_fastrtps_cpp-extras.cmake
+index e31fb41..ed732e4 100644
+--- a/rmw_fastrtps_cpp/rmw_fastrtps_cpp-extras.cmake
++++ b/rmw_fastrtps_cpp/rmw_fastrtps_cpp-extras.cmake
+@@ -16,7 +16,7 @@
+ 
+ find_package(fastrtps_cmake_module REQUIRED)
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ find_package(FastRTPS REQUIRED MODULE)
+ 
+ list(APPEND rmw_fastrtps_cpp_INCLUDE_DIRS ${FastRTPS_INCLUDE_DIR})
+diff --git a/rmw_fastrtps_dynamic_cpp/CMakeLists.txt b/rmw_fastrtps_dynamic_cpp/CMakeLists.txt
+index 4451718..5fb84fb 100644
+--- a/rmw_fastrtps_dynamic_cpp/CMakeLists.txt
++++ b/rmw_fastrtps_dynamic_cpp/CMakeLists.txt
+@@ -38,7 +38,7 @@ find_package(rmw_fastrtps_shared_cpp REQUIRED)
+ 
+ find_package(fastrtps_cmake_module REQUIRED)
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ find_package(FastRTPS REQUIRED MODULE)
+ 
+ find_package(rmw REQUIRED)
+diff --git a/rmw_fastrtps_dynamic_cpp/rmw_fastrtps_dynamic_cpp-extras.cmake b/rmw_fastrtps_dynamic_cpp/rmw_fastrtps_dynamic_cpp-extras.cmake
+index 2db8a7b..c558681 100644
+--- a/rmw_fastrtps_dynamic_cpp/rmw_fastrtps_dynamic_cpp-extras.cmake
++++ b/rmw_fastrtps_dynamic_cpp/rmw_fastrtps_dynamic_cpp-extras.cmake
+@@ -16,7 +16,7 @@
+ 
+ find_package(fastrtps_cmake_module REQUIRED)
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ find_package(FastRTPS REQUIRED MODULE)
+ 
+ list(APPEND rmw_fastrtps_dynamic_cpp_INCLUDE_DIRS ${FastRTPS_INCLUDE_DIR})
+diff --git a/rmw_fastrtps_shared_cpp/CMakeLists.txt b/rmw_fastrtps_shared_cpp/CMakeLists.txt
+index 805d75e..eef9fb6 100644
+--- a/rmw_fastrtps_shared_cpp/CMakeLists.txt
++++ b/rmw_fastrtps_shared_cpp/CMakeLists.txt
+@@ -41,7 +41,7 @@ find_package(rmw_dds_common REQUIRED)
+ 
+ find_package(fastrtps_cmake_module REQUIRED)
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ find_package(FastRTPS REQUIRED MODULE)
+ 
+ find_package(rmw REQUIRED)
+diff --git a/rmw_fastrtps_shared_cpp/rmw_fastrtps_shared_cpp-extras.cmake b/rmw_fastrtps_shared_cpp/rmw_fastrtps_shared_cpp-extras.cmake
+index 860e972..0aa9c9c 100644
+--- a/rmw_fastrtps_shared_cpp/rmw_fastrtps_shared_cpp-extras.cmake
++++ b/rmw_fastrtps_shared_cpp/rmw_fastrtps_shared_cpp-extras.cmake
+@@ -16,7 +16,7 @@
+ 
+ find_package(fastrtps_cmake_module REQUIRED)
+ find_package(fastcdr REQUIRED CONFIG)
+-find_package(fastrtps REQUIRED CONFIG)
++find_package(fastdds REQUIRED CONFIG)
+ find_package(FastRTPS REQUIRED MODULE)
+ 
+ list(APPEND rmw_fastrtps_shared_cpp_INCLUDE_DIRS ${FastRTPS_INCLUDE_DIR})

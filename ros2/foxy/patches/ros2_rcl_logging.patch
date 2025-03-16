@@ -1,0 +1,63 @@
+diff --git a/rcl_logging_spdlog/CMakeLists.txt b/rcl_logging_spdlog/CMakeLists.txt
+index d6b31e2..f426b55 100644
+--- a/rcl_logging_spdlog/CMakeLists.txt
++++ b/rcl_logging_spdlog/CMakeLists.txt
+@@ -13,7 +13,6 @@ endif()
+ 
+ find_package(ament_cmake_ros REQUIRED)
+ find_package(rcutils REQUIRED)
+-find_package(spdlog_vendor REQUIRED) # Provides spdlog 1.3.1 on platforms without it.
+ find_package(spdlog REQUIRED)
+ find_package(rcpputils REQUIRED)
+ 
+@@ -25,14 +24,17 @@ add_library(${PROJECT_NAME} src/rcl_logging_spdlog.cpp)
+ target_include_directories(${PROJECT_NAME} PUBLIC
+   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+   "$<INSTALL_INTERFACE:include>")
+-target_link_libraries(${PROJECT_NAME} spdlog::spdlog)
+-
+-ament_target_dependencies(${PROJECT_NAME}
+-  rcutils
+-  spdlog
+-  rcpputils
++target_link_libraries(${PROJECT_NAME}
++  spdlog::spdlog
++  rcpputils::rcpputils
++  rcutils::rcutils
+ )
+ 
++# ament_target_dependencies(${PROJECT_NAME}
++#   rcutils spdlog
++#   rcpputils
++# )
++
+ target_compile_definitions(${PROJECT_NAME} PRIVATE "RCL_LOGGING_BUILDING_DLL")
+ 
+ install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}
+@@ -68,7 +70,7 @@ if(BUILD_TESTING)
+ endif()
+ 
+ ament_export_include_directories(include)
+-ament_export_dependencies(ament_cmake rcutils spdlog_vendor spdlog)
++ament_export_dependencies(ament_cmake rcutils spdlog)
+ ament_export_libraries(${PROJECT_NAME})
+ ament_export_targets(${PROJECT_NAME})
+ ament_package()
+diff --git a/rcl_logging_spdlog/package.xml b/rcl_logging_spdlog/package.xml
+index cd1fd63..4df3b62 100644
+--- a/rcl_logging_spdlog/package.xml
++++ b/rcl_logging_spdlog/package.xml
+@@ -10,13 +10,11 @@
+ 
+   <buildtool_depend>ament_cmake_ros</buildtool_depend>
+ 
+-  <build_depend>spdlog_vendor</build_depend>
+   <build_depend>spdlog</build_depend>
+ 
+   <depend>rcutils</depend>
+   <depend>rcpputils</depend>
+ 
+-  <exec_depend>spdlog_vendor</exec_depend>
+   <exec_depend>spdlog</exec_depend>
+ 
+   <test_depend>ament_lint_auto</test_depend>
