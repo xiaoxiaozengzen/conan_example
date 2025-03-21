@@ -246,8 +246,6 @@ class HelloConan(ConanFile):
         # self.cpp_info.set_property("cmake_target_name", "hello")
         # self.cpp_info.libs = ["hello"]
         
-        self.cpp_info.defines = ["HELLO_DEFINE"]
-
         # hello
         self.cpp_info.components["libhello"].set_property(
             "cmake_target_name", "HEllo::hello"
