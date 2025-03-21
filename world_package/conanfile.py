@@ -41,7 +41,25 @@ class WorldConan(ConanFile):
         self.requires("hello/1.1.1@cgz/demo")
 
     def layout(self):
-        pass
+        # ------------------- conan create -------------------
+        self.folders.source = ""
+        # editable状态下，当设置generators=“generators1”时，build1不会被创建。所以设置generators=build
+        self.folders.build = "build1"
+        self.folders.generators = self.folders.build+"/generators1"
+        print("layout self.folders.source: ", self.folders.source)
+        print("layout self.folders.build: ", self.folders.build)
+        print("layout self.folders.generators: ", self.folders.generators)
+        
+        # ------------------- conan editable -------------------
+        # 该路径相对于source_folder
+        self.cpp.source.includedirs = ["include"]        
+        # 该路径相对于build_folder
+        self.cpp.build.libdirs = ["."]
+        self.cpp.build.bindirs = ["bin"]
+        self.cpp.build.libs = ["world"]
+        print("layout self.cpp.source.includedirs: ", self.cpp.source.includedirs)
+        print("layout self.cpp.build.libdirs: ", self.cpp.build.libdirs)
+        print("layout self.cpp.build.bindirs: ", self.cpp.build.bindirs)
 
     def export_sources(self):
         self.copy(
