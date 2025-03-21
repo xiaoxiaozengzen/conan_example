@@ -43,6 +43,7 @@ if(BUILD_MAIN)
     ${protobuf_INCLUDE_DIRS}
     ${CMAKE_CURRENT_BINARY_DIR}
   )
+  target_compile_definitions(hello_main PUBLIC HELLO_MAIN)
 endif()
 
 if(DEFINED BUILD_TESTING)

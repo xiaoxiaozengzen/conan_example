@@ -64,7 +64,9 @@ class ExampleConan(ConanFile):
         if self.options.with_test:
             tc.variables["BUILD_TESTING"] = True
         else:
-            tc.variables["BUILD_TESTING"] = False        
+            tc.variables["BUILD_TESTING"] = False
+        if self.options["hello"].with_main:
+            tc.variables["BUILD_MAIN"] = True        
         tc.generate()
         tc = CMakeDeps(self)
         tc.generate()

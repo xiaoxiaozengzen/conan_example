@@ -6,6 +6,6 @@
 int main(int argc, char** argv){
   hello();
   message();
-  //  hello_main();
+  hello_main();
   nihao_l2();
 }

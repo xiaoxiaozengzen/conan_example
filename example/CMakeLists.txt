@@ -31,6 +31,10 @@ add_executable(test_exe test.cpp)
 target_link_libraries(test_exe ${Nihao_LIBRARIES} ${World_LIBRARIES} HEllo::hello)
 target_include_directories(test_exe PUBLIC ${Nihao_INCLUDE_DIRS} ${World_INCLUDE_DIRS} ${HEllo_INCLUDE_DIRS})
 
+if(BUILD_MAIN)
+target_compile_definitions(test_exe PUBLIC HELLO_MAIN)
+endif()
+
 if(DEFINED BUILD_TESTING)
     message(STATUS "BUILD_TESTING is defined: ${BUILD_TESTING}")
 else()
