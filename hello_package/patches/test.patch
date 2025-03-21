@@ -23,8 +23,8 @@ index 93b7120..4211b03 100644
      message(STATUS "${CMAKE_CURRENT_LINE} HELLO BUILD_TESTING is defined: ${BUILD_TESTING}")
 diff --git a/include/hello.h b/include/hello.h
 index 1ee85a4..30038f8 100644
---- a/hello_package/hello/include/hello.h
-+++ b/hello_package/hello/include/hello.h
+--- a/include/hello.h
++++ b/include/hello.h
 @@ -7,6 +7,6 @@
  #endif
  
