@@ -13,7 +13,7 @@ void hello(){
     std::cout << "hello/0.1: Hello World Debug!" <<std::endl;
     #endif
 
-    #ifdef HELLO_DEFINE
+    #ifdef HELLO
     std::cout << "hello/1.1.1: Hello Define!" <<std::endl;
     #endif
 }

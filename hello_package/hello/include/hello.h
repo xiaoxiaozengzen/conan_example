@@ -7,6 +7,9 @@
 #endif
 
 hello_EXPORT void hello();
-// hello_EXPORT void hello_main();
+
+#ifdef HELLO_MAIN
+hello_EXPORT void hello_main();
+#endif
 
 void message();

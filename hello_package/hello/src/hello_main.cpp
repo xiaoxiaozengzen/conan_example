@@ -11,8 +11,4 @@ void hello_main(){
     #else
     std::cout << "hello/0.1: Hello World Debug!  hello_main" <<std::endl;
     #endif
-
-    #ifdef HELLO_DEFINE
-    std::cout << "hello/1.1.1: Hello Define! hello_main" <<std::endl;
-    #endif
 }

@@ -33,9 +33,10 @@ class HelloConan(ConanFile):
         "number": ["default", "first"],
         "calib3d": [True, False],
         "with_test": [True, False],
+        "with_main": [True, False],
     }
     options.update({_name: [True, False] for _name, _ in HELLO_MAIN_MODULES_OPTIONS})
-    default_options = {"shared": True, "fPIC": True, "number": "default", "calib3d": True, "with_test": False}
+    default_options = {"shared": True, "fPIC": True, "number": "default", "calib3d": True, "with_test": False, "with_main": True}
     default_options.update(
         {_name: select for _name, select in HELLO_MAIN_MODULES_OPTIONS}
     )
@@ -257,18 +258,20 @@ class HelloConan(ConanFile):
             "pkg_config_name", "hello"
         )
         self.cpp_info.components["libhello"].libs = [f"hello"]
+        self.cpp_info.components["libhello"].defines = ["HELLO"]
 
-        # hello_main
-        self.cpp_info.components["libhello_main"].set_property(
-            "cmake_target_name", "HEllo::hello_main"
-        )
-        self.cpp_info.components["libhello_main"].set_property(
-            "cmake_target_aliases", ["HEllo::hello_main"]
-        )
-        self.cpp_info.components["libhello_main"].set_property(
-            "pkg_config_name", "hello_main"
-        )
-        self.cpp_info.components["libhello_main"].libs = [f"hello_main"]
+        if self.options.with_main:
+          # hello_main
+          self.cpp_info.components["libhello_main"].set_property(
+              "cmake_target_name", "HEllo::hello_main"
+          )
+          self.cpp_info.components["libhello_main"].set_property(
+              "cmake_target_aliases", ["HEllo::hello_main"]
+          )
+          self.cpp_info.components["libhello_main"].set_property(
+              "pkg_config_name", "hello_main"
+          )
+          self.cpp_info.components["libhello_main"].libs = [f"hello_main"]
 
         self.env_info.WORLD = "WORLD"
         self.runenv_info.define("HELLO_TEST", "HAHAHA")
@@ -287,6 +290,10 @@ class HelloConan(ConanFile):
             tc.variables["BUILD_TESTING"] = True
         else:
             tc.variables["BUILD_TESTING"] = False
+        if self.options.with_main:
+            tc.variables["BUILD_MAIN"] = True
+        else:
+            tc.variables["BUILD_MAIN"] = False
         tc.generate()
         deps = CMakeDeps(self)
         deps.generate()

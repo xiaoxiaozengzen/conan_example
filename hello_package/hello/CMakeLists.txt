@@ -36,12 +36,14 @@ target_include_directories(hello PUBLIC
 
 target_link_libraries(hello PUBLIC ${protobuf_LIBRARIES})
 
-# add_library(hello_main src/hello_main.cpp)
-# target_include_directories(hello_main PUBLIC
-#   ${CMAKE_CURRENT_SOURCE_DIR}/include
-#   ${protobuf_INCLUDE_DIRS}
-#   ${CMAKE_CURRENT_BINARY_DIR}
-# )
+if(BUILD_MAIN)
+  add_library(hello_main src/hello_main.cpp)
+  target_include_directories(hello_main PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${protobuf_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_BINARY_DIR}
+  )
+endif()
 
 if(DEFINED BUILD_TESTING)
     message(STATUS "${CMAKE_CURRENT_LINE} HELLO BUILD_TESTING is defined: ${BUILD_TESTING}")
