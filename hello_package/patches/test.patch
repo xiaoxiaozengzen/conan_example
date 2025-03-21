@@ -1,35 +1,13 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 93b7120..4211b03 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -36,12 +36,12 @@ target_include_directories(hello PUBLIC
+diff --git a/src/hello.cpp b/src/hello.cpp
+index f95920d..cd52b16 100644
+--- a/src/hello.cpp
++++ b/src/hello.cpp
+@@ -8,7 +8,7 @@
  
- target_link_libraries(hello PUBLIC ${protobuf_LIBRARIES})
- 
--# add_library(hello_main src/hello_main.cpp)
--# target_include_directories(hello_main PUBLIC
--#   ${CMAKE_CURRENT_SOURCE_DIR}/include
--#   ${protobuf_INCLUDE_DIRS}
--#   ${CMAKE_CURRENT_BINARY_DIR}
--# )
-+add_library(hello_main src/hello_main.cpp)
-+target_include_directories(hello_main PUBLIC
-+  ${CMAKE_CURRENT_SOURCE_DIR}/include
-+  ${protobuf_INCLUDE_DIRS}
-+  ${CMAKE_CURRENT_BINARY_DIR}
-+)
- 
- if(DEFINED BUILD_TESTING)
-     message(STATUS "${CMAKE_CURRENT_LINE} HELLO BUILD_TESTING is defined: ${BUILD_TESTING}")
-diff --git a/include/hello.h b/include/hello.h
-index 1ee85a4..30038f8 100644
---- a/include/hello.h
-+++ b/include/hello.h
-@@ -7,6 +7,6 @@
- #endif
- 
- hello_EXPORT void hello();
--// hello_EXPORT void hello_main();
-+hello_EXPORT void hello_main();
- 
- void message();
+ void hello(){
+     #ifdef NDEBUG
+-    std::cout << "hello/0.1: Hello World Release!" <<std::endl;
++    std::cout << "hello/0.1: Hello World Patches!" <<std::endl;
+     #else
+     std::cout << "hello/0.1: Hello World Debug!" <<std::endl;
+     #endif
