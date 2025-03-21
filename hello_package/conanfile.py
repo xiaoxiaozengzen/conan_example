@@ -258,6 +258,7 @@ class HelloConan(ConanFile):
             "pkg_config_name", "hello"
         )
         self.cpp_info.components["libhello"].libs = [f"hello"]
+        # don't work, why?
         self.cpp_info.components["libhello"].defines = ["HELLO"]
 
         if self.options.with_main:
