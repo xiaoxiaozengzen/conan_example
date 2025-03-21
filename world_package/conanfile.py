@@ -41,18 +41,29 @@ class WorldConan(ConanFile):
         self.requires("hello/1.1.1@cgz/demo")
 
     def layout(self):
-        cmake_layout(self, src_folder="src")
+        pass
 
     def export_sources(self):
         self.copy(
-            "*",
-            dst=os.path.join(self.export_sources_folder, "src"),
-            src=os.path.join(os.getcwd(), "world"),
+            "include/*",
+            dst=os.path.join(self.export_sources_folder),
+            src=os.path.join(os.getcwd()),
+        )
+        self.copy(
+            "CMakeLists.txt",
+            dst=self.export_sources_folder,
+            src=os.path.join(os.getcwd()),
+        )
+        self.copy(
+            "src/*",
+            dst=os.path.join(self.export_sources_folder),
+            src=os.path.join(os.getcwd()),
         )
 
     def source(self):
-        pass
+        save(self, os.path.join(self.source_folder, "external.h"), "#pragma once \n#include <iostream>")
 
+    # 会去找layout中设置的source路径下的CMakeLists.txt
     def build(self):
         cmake = CMake(self)
         cmake.configure()

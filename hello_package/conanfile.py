@@ -184,6 +184,7 @@ class HelloConan(ConanFile):
             content=f"#include <iostream>\n",
         )
 
+    # 会去找layout中设置的source路径下的CMakeLists.txt
     def build(self):
         print("hello build: path= ", self.python_requires["gtest"].path)
         self.output.success("This is a good, should be green")
